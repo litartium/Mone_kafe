@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>MONE | Кафе в Каспийске</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #0b0a0c;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: #ece8e0;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* кастомный курсор (на мобильных скрыт) */
+        .cursor-glow {
+            display: none;
+        }
+        @media (min-width: 1024px) {
+            .cursor-glow {
+                display: block;
+                width: 450px;
+                height: 450px;
+                background: radial-gradient(circle, rgba(199, 162, 82, 0.12) 0%, rgba(199, 162, 82, 0) 70%);
+                position: fixed;
+                pointer-events: none;
+                border-radius: 50%;
+                transform: translate(-50%, -50%);
+                z-index: 9999;
+                transition: transform 0.08s linear;
+                will-change: transform;
+            }
+        }
+
+        /* плавающие размытые пятна */
+        .blob {
+            position: fixed;
+            width: 50vw;
+            height: 50vw;
+            background: radial-gradient(circle, rgba(199, 162, 82, 0.08) 0%, rgba(20, 20, 30, 0) 80%);
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -2;
+            animation: floatBlob 25s infinite alternate ease-in-out;
+        }
+
+        .blob-1 { top: -20vh; left: -10vw; animation-duration: 30s; }
+        .blob-2 { bottom: -15vh; right: -5vw; width: 60vw; height: 60vw; background: radial-gradient(circle, rgba(210, 180, 110, 0.06) 0%, rgba(0,0,0,0) 80%); animation-duration: 35s; animation-delay: -5s; }
+        .blob-3 { top: 40%; left: 60%; width: 40vw; height: 40vw; background: radial-gradient(circle, rgba(180, 130, 70, 0.05) 0%, transparent 70%); animation-duration: 28s; animation-delay: -12s; }
+
+        @keyframes floatBlob {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(7%, 12%) scale(1.2); }
+        }
+
+        /* анимация появления секций */
+        .section {
+            opacity: 0;
+            transform: translateY(35px);
+            transition: opacity 1s cubic-bezier(0.2, 0.9, 0.4, 1.1), transform 0.9s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+
+        .section.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* навигация */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(14px);
+            background: rgba(10, 8, 12, 0.85);
+            border-bottom: 1px solid rgba(199, 162, 82, 0.25);
+            transition: all 0.3s ease;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #e9d6b0, #c7a252);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #f2ede5;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            transition: 0.3s;
+            font-size: 1rem;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 0;
+            width: 0%;
+            height: 2px;
+            background: #c7a252;
+            transition: 0.3s ease;
+        }
+
+        .nav-links a:hover::after, .nav-links a.active::after {
+            width: 100%;
+        }
+
+        .contact-btn {
+            background: transparent;
+            border: 1.5px solid #c7a252;
+            padding: 0.5rem 1.3rem;
+            border-radius: 40px;
+            color: #c7a252;
+            font-weight: 600;
+            transition: 0.3s;
+            cursor: pointer;
+            background: rgba(199, 162, 82, 0.05);
+            font-size: 0.9rem;
+        }
+
+        .contact-btn:hover {
+            background: #c7a252;
+            color: #0b0a0c;
+            box-shadow: 0 0 18px rgba(199, 162, 82, 0.4);
+            transform: scale(1.02);
+        }
+
+        .menu-toggle {
+            display: none;
+            font-size: 1.8rem;
+            color: #c7a252;
+            cursor: pointer;
+        }
+
+        /* Hero секция */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            padding: 0 5%;
+            background: radial-gradient(ellipse at 30% 40%, rgba(20, 18, 24, 0.7), #030203);
+        }
+
+        .hero-content {
+            width: 100%;
+            padding: 1rem;
+        }
+
+        .hero-content h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 10vw, 5.8rem);
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fff6e5, #d9b56a);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .gold-text {
+            color: #c7a252;
+            letter-spacing: 2px;
+        }
+
+        .hero-sub {
+            font-size: clamp(1rem, 4vw, 1.2rem);
+            max-width: 700px;
+            margin: 0 auto 1.5rem;
+            opacity: 0.85;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary, .btn-outline-light {
+            padding: 0.8rem 1.8rem;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: #c7a252;
+            border: none;
+            font-weight: 700;
+            border-radius: 50px;
+            color: #0a080c;
+            transition: 0.25s;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(199, 162, 82, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: #e0bc74;
+            transform: translateY(-3px);
+        }
+
+        .btn-outline-light {
+            background: transparent;
+            border: 1.5px solid rgba(199, 162, 82, 0.7);
+            border-radius: 50px;
+            color: #ece8e0;
+            font-weight: 600;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 6vw, 2.8rem);
+            text-align: center;
+            margin-bottom: 2rem;
+            letter-spacing: -0.02em;
+        }
+        .section-title span {
+            color: #c7a252;
+            border-bottom: 2px solid #c7a252;
+            display: inline-block;
+            padding-bottom: 6px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 5%;
+        }
+
+        /* about */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: center;
+        }
+        .about-text p {
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+            color: #dbd5ca;
+        }
+        .about-img {
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 25px 40px -15px rgba(0,0,0,0.6);
+        }
+        .about-img img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.7s ease;
+        }
+        .about-img:hover img {
+            transform: scale(1.03);
+        }
+
+        /* меню */
+        .menu-filters {
+            display: flex;
+            justify-content: center;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+        .filter-btn {
+            background: rgba(255,255,240,0.05);
+            border: 1px solid rgba(199, 162, 82, 0.4);
+            padding: 0.5rem 1.2rem;
+            border-radius: 40px;
+            font-weight: 600;
+            color: #ddd6cc;
+            transition: 0.2s;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        .filter-btn.active, .filter-btn:hover {
+            background: rgba(199, 162, 82, 0.2);
+            border-color: #c7a252;
+            color: #c7a252;
+        }
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.8rem;
+        }
+        .menu-card {
+            background: rgba(20, 18, 24, 0.65);
+            backdrop-filter: blur(8px);
+            border-radius: 24px;
+            overflow: hidden;
+            border: 1px solid rgba(199, 162, 82, 0.2);
+            transition: all 0.4s ease;
+        }
+        .menu-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(199, 162, 82, 0.5);
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.5);
+        }
+        .card-img {
+            height: 200px;
+            overflow: hidden;
+        }
+        .card-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+        .menu-card:hover .card-img img {
+            transform: scale(1.05);
+        }
+        .card-info {
+            padding: 1.2rem;
+        }
+        .dish-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            font-family: 'Playfair Display', serif;
+        }
+        .price {
+            color: #c7a252;
+            font-weight: 800;
+            font-size: 1.1rem;
+        }
+        .desc {
+            color: #bcb4a6;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            margin-top: 0.5rem;
+        }
+
+        /* контакты */
+        .contact-section {
+            background: rgba(10, 8, 15, 0.6);
+            border-radius: 30px;
+            padding: 2rem;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(199, 162, 82, 0.25);
+        }
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+        .contact-card {
+            text-align: center;
+            padding: 1.5rem;
+            background: rgba(0,0,0,0.3);
+            border-radius: 24px;
+            transition: all 0.3s;
+        }
+        .contact-card:hover {
+            transform: translateY(-5px);
+            background: rgba(199, 162, 82, 0.1);
+        }
+        .contact-icon {
+            font-size: 2.2rem;
+            color: #c7a252;
+            margin-bottom: 1rem;
+        }
+        .contact-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            font-family: 'Playfair Display', serif;
+        }
+        .contact-card p, .contact-card a {
+            color: #dbd5ca;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: 0.2s;
+        }
+        .contact-card a:hover {
+            color: #c7a252;
+        }
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        .social-icons a {
+            width: 48px;
+            height: 48px;
+            background: rgba(199, 162, 82, 0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            color: #c7a252;
+            transition: all 0.3s;
+            border: 1px solid rgba(199, 162, 82, 0.3);
+        }
+        .social-icons a:hover {
+            background: #c7a252;
+            color: #0b0a0c;
+            transform: translateY(-3px);
+        }
+        .map-container {
+            margin-top: 2rem;
+            border-radius: 24px;
+            overflow: hidden;
+            height: 280px;
+        }
+        .map-container iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            border-top: 1px solid rgba(199,162,82,0.2);
+            margin-top: 3rem;
+            color: #b3aa9a;
+            font-size: 0.85rem;
+        }
+
+        /* Мобильная навигация */
+        @media (max-width: 992px) {
+            .about-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 75%;
+                height: 100vh;
+                background: rgba(5, 3, 8, 0.98);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                transition: 0.4s;
+                gap: 2rem;
+                z-index: 1001;
+            }
+            .nav-links.active {
+                right: 0;
+            }
+            .menu-toggle {
+                display: block;
+                z-index: 1002;
+            }
+            .contact-btn {
+                display: none;
+            }
+            .navbar .contact-mobile {
+                display: block;
+                margin-top: 1.5rem;
+            }
+            .contact-mobile .contact-btn {
+                display: block;
+            }
+            .navbar {
+                padding: 0.8rem 5%;
+            }
+            .logo {
+                font-size: 1.3rem;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .container {
+                padding: 0 4%;
+            }
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+            .contact-section {
+                padding: 1.2rem;
+            }
+            .hero-content h1 {
+                font-size: 2.2rem;
+            }
+            .btn-primary, .btn-outline-light {
+                padding: 0.6rem 1.2rem;
+                font-size: 0.85rem;
+            }
+            .section-title {
+                margin-bottom: 1.5rem;
+            }
+            .contact-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+
+        .scroll-top {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background: #c7a252;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: 0.3s;
+            z-index: 99;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .scroll-top.visible {
+            opacity: 1;
+        }
+        .scroll-top:hover {
+            transform: translateY(-3px);
+            background: #e0bc74;
+        }
+    </style>
+</head>
+<body>
+<div class="cursor-glow" id="cursorGlow"></div>
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+<div class="blob blob-3"></div>
+
+<nav class="navbar">
+    <div class="logo">MONE | КАСПИЙСК</div>
+    <ul class="nav-links" id="navLinks">
+        <li><a href="#home" class="nav-link">Главная</a></li>
+        <li><a href="#about" class="nav-link">О нас</a></li>
+        <li><a href="#menu" class="nav-link">Меню</a></li>
+        <li><a href="#contact" class="nav-link">Контакты</a></li>
+        <li class="contact-mobile"><button class="contact-btn" id="mobileContactBtn">Связаться</button></li>
+    </ul>
+    <button class="contact-btn" id="desktopContactBtn">Связаться</button>
+    <div class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></div>
+</nav>
+
+<main>
+    <section id="home" class="hero section">
+        <div class="hero-content">
+            <h1>MONE<br><span class="gold-text">Каспийск</span></h1>
+            <p class="hero-sub">Атмосфера уюта и вкуса. Традиции кавказской кухни и авторские блюда от шеф-повара. Идеальное место для встреч с друзьями и семьей.</p>
+            <div class="btn-group">
+                <button class="btn-primary" id="exploreMenuBtn">Посмотреть меню</button>
+                <button class="btn-outline-light" id="contactHeroBtn">Связаться с нами</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="section container" style="margin-top: 2rem;">
+        <h2 class="section-title"><span>О нас</span></h2>
+        <div class="about-grid">
+            <div class="about-text">
+                <p>Кафе «MONE» в Каспийске — это пространство, где каждый гость чувствует себя желанным. Мы объединили вековые традиции кавказского гостеприимства с современным подходом к сервису и кулинарии.</p>
+                <p>Наша команда использует только свежие фермерские продукты: от сочных дагестанских овощей до отборного мяса и рыбы из Каспийского моря. Каждое блюдо готовится с душой и вниманием к деталям.</p>
+                <p>Уютный интерьер, приглушенный свет и теплая атмосфера создают идеальные условия для романтического ужина, дружеской встречи или семейного обеда. Ждем вас в гости!</p>
+            </div>
+            <div class="about-img">
+                <img src="https://images.unsplash.com/photo-1559339352-11d8d9b5e3c3?w=800&auto=format" alt="Интерьер кафе MONE" loading="lazy">
+            </div>
+        </div>
+    </section>
+
+    <section id="menu" class="section container" style="margin-top: 3rem;">
+        <h2 class="section-title"><span>Наше меню</span></h2>
+        <div class="menu-filters" id="filterContainer">
+            <button class="filter-btn active" data-category="all">Все блюда</button>
+            <button class="filter-btn" data-category="appetizers">Закуски</button>
+            <button class="filter-btn" data-category="main">Основные блюда</button>
+            <button class="filter-btn" data-category="desserts">Десерты</button>
+            <button class="filter-btn" data-category="drinks">Напитки</button>
+        </div>
+        <div class="menu-grid" id="menuGrid"></div>
+    </section>
+
+    <section id="contact" class="section container" style="margin-top: 3rem;">
+        <h2 class="section-title"><span>Контакты</span></h2>
+        <div class="contact-section">
+            <div class="contact-grid">
+                <div class="contact-card">
+                    <div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div>
+                    <h3>Адрес</h3>
+                    <p>г. Каспийск, ул. Ленина, 33Б/1</p>
+                </div>
+                <div class="contact-card">
+                    <div class="contact-icon"><i class="fas fa-phone-alt"></i></div>
+                    <h3>Телефон</h3>
+                    <a href="tel:+79640046738">+7 (964) 004-67-38</a>
+                </div>
+                <div class="contact-card">
+                    <div class="contact-icon"><i class="fas fa-clock"></i></div>
+                    <h3>Режим работы</h3>
+                    <p>Ежедневно: 12:00 – 00:00</p>
+                </div>
+            </div>
+            <div class="social-icons">
+                <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+                <a href="#" target="_blank"><i class="fab fa-telegram"></i></a>
+                <a href="#" target="_blank"><i class="fab fa-whatsapp"></i></a>
+                <a href="#" target="_blank"><i class="fab fa-vk"></i></a>
+            </div>
+            <div class="map-container">
+                <iframe src="https://yandex.ru/map-widget/v1/?ll=47.6392,42.8816&z=15&pt=47.6392,42.8816&l=map" loading="lazy"></iframe>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer>
+    <p>© 2025 MONE | Кафе в Каспийске. Все права защищены.</p>
+</footer>
+<div class="scroll-top" id="scrollTopBtn"><i class="fas fa-chevron-up"></i></div>
+
+<script>
+    const menuData = [
+        { name: "Цезарь с курицей", price: "350 ₽", desc: "Куриное филе, салат романо, пармезан, соус Цезарь, гренки", category: "appetizers", img: "https://images.unsplash.com/photo-1550304943-4f24f54ddde9?w=500&auto=format" },
+        { name: "Греческий салат", price: "320 ₽", desc: "Свежие овощи, фета, оливки, орегано, оливковое масло", category: "appetizers", img: "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=500&auto=format" },
+        { name: "Шашлык из баранины", price: "450 ₽", desc: "Мягкая баранина, маринованная в специях, подается с лавашом и соусом", category: "main", img: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=500&auto=format" },
+        { name: "Люля-кебаб", price: "380 ₽", desc: "Домашний фарш из говядины и баранины, зелень, лучок, специи", category: "main", img: "https://images.unsplash.com/photo-1603360946369-dc9bb6258143?w=500&auto=format" },
+        { name: "Аварский хинкал", price: "280 ₽", desc: "Традиционное дагестанское блюдо с мясом, бульоном и чесночным соусом", category: "main", img: "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=500&auto=format" },
+        { name: "Курзе с мясом", price: "320 ₽", desc: "Дагестанские пельмени с сочной начинкой, подаются со сметаной", category: "main", img: "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=500&auto=format" },
+        { name: "Медовик", price: "180 ₽", desc: "Нежный классический торт с медовыми коржами и кремом", category: "desserts", img: "https://images.unsplash.com/photo-1571115177098-24ec42ed204d?w=500&auto=format" },
+        { name: "Чизкейк Нью-Йорк", price: "220 ₽", desc: "Творожный десерт с ягодным соусом", category: "desserts", img: "https://images.unsplash.com/photo-1524351199670-158a4715a792?w=500&auto=format" },
+        { name: "Домашний лимонад", price: "150 ₽", desc: "Освежающий напиток с мятой, лимоном и имбирем", category: "drinks", img: "https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=500&auto=format" },
+        { name: "Чай черный/зеленый", price: "80 ₽", desc: "Ароматный чай с травами, подается с медом и вареньем", category: "drinks", img: "https://images.unsplash.com/photo-1597481499750-3e6b14537c1c?w=500&auto=format" },
+        { name: "Хинкал куриный", price: "260 ₽", desc: "Нежное куриное мясо, ароматный бульон, тесто ручной работы", category: "main", img: "https://images.unsplash.com/photo-1625938144755-652e08e359b4?w=500&auto=format" },
+        { name: "Пахлава дагестанская", price: "190 ₽", desc: "Слоеный десерт с орехами и медовым сиропом", category: "desserts", img: "https://images.unsplash.com/photo-1631746228683-a3e3d0a2cc6c?w=500&auto=format" }
+    ];
+
+    let currentFilter = "all";
+
+    function renderMenu() {
+        const filtered = currentFilter === "all" ? menuData : menuData.filter(item => item.category === currentFilter);
+        const grid = document.getElementById("menuGrid");
+        if (!grid) return;
+        grid.innerHTML = filtered.map(item => `
+            <div class="menu-card">
+                <div class="card-img"><img src="${item.img}" alt="${item.name}" loading="lazy"></div>
+                <div class="card-info">
+                    <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                        <div class="dish-name">${item.name}</div>
+                        <div class="price">${item.price}</div>
+                    </div>
+                    <div class="desc">${item.desc}</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // фильтры
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentFilter = btn.getAttribute('data-category');
+            renderMenu();
+        });
+    });
+
+    // мобильное меню
+    const menuToggle = document.getElementById('menuToggle');
+    const navLinks = document.getElementById('navLinks');
+    if(menuToggle) {
+        menuToggle.addEventListener('click', () => navLinks.classList.toggle('active'));
+    }
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', () => navLinks.classList.remove('active'));
+    });
+
+    // плавная прокрутка
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href').substring(1);
+            const target = document.getElementById(targetId);
+            if(target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    });
+    document.getElementById('exploreMenuBtn')?.addEventListener('click', () => document.getElementById('menu')?.scrollIntoView({ behavior: 'smooth' }));
+    document.getElementById('contactHeroBtn')?.addEventListener('click', () => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }));
+    document.getElementById('desktopContactBtn')?.addEventListener('click', () => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }));
+    document.getElementById('mobileContactBtn')?.addEventListener('click', () => {
+        document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+        navLinks.classList.remove('active');
+    });
+
+    // скролл-спи активная ссылка
+    const sections = document.querySelectorAll('.section, #home, #about, #menu, #contact');
+    const navItems = document.querySelectorAll('.nav-link');
+    window.addEventListener('scroll', () => {
+        let current = '';
+        const scrollPos = window.scrollY + 150;
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.offsetHeight;
+            if(scrollPos >= sectionTop && scrollPos < sectionTop + sectionHeight) {
+                current = section.getAttribute('id');
+            }
+        });
+        navItems.forEach(item => {
+            item.classList.remove('active');
+            const href = item.getAttribute('href').substring(1);
+            if(href === current) item.classList.add('active');
+        });
+        const scrollBtn = document.getElementById('scrollTopBtn');
+        if(window.scrollY > 600) scrollBtn.classList.add('visible');
+        else scrollBtn.classList.remove('visible');
+    });
+
+    // кнопка наверх
+    document.getElementById('scrollTopBtn').addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // анимация появления
+    const revealSections = document.querySelectorAll('.section');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if(entry.isIntersecting) {
+                entry.target.classList.add('revealed');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.15 });
+    revealSections.forEach(section => observer.observe(section));
+
+    // курсор (только на десктопе)
+    const glow = document.getElementById('cursorGlow');
+    if(glow) {
+        document.addEventListener('mousemove', (e) => {
+            glow.style.left = e.clientX + 'px';
+            glow.style.top = e.clientY + 'px';
+        });
+    }
+
+    renderMenu();
+    document.querySelectorAll('.section').forEach(sec => {
+        if(sec.getBoundingClientRect().top < window.innerHeight-100) sec.classList.add('revealed');
+    });
+    window.dispatchEvent(new Event('scroll'));
+</script>
+</body>
+</html>
